@@ -521,23 +521,6 @@
         link.href = this.canvas.toDataURL();
         link.click();
       }
-      exportUV() {
-        const uvData = this.images
-          .filter(img => img.assigned)
-          .map((img) => {
-            const u = img.gridX / this.gridX;
-            const v = img.gridY / this.gridY;
-            const uWidth = 1.0 / this.gridX;
-            const vHeight = 1.0 / this.gridY;
-            return { name: img.name, gridX: img.gridX, gridY: img.gridY, u, v, uWidth, vHeight, uMax: u + uWidth, vMax: v + vHeight };
-          });
-        const blob = new Blob([JSON.stringify(uvData, null, 2)], {type:'application/json'});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url; link.download = `uv_coordinates_${this.gridX}x${this.gridY}.json`;
-        link.click();
-        URL.revokeObjectURL(url);
-      }
     }
 
     // Init

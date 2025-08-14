@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Atlas de Texturas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: #fff; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .controls { background: #2a2a2a; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; font-size: 14px; }
+        select, input { padding: 8px; border: 1px solid #444; border-radius: 4px; background: #333; color: #fff; }
+        button { background: #0066cc; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0052a3; }
+        .atlas-container { display: flex; gap: 20px; align-items: flex-start; }
+        .atlas-canvas-container { background: #2a2a2a; padding: 20px; border-radius: 8px; flex: 1; }
+        #atlasCanvas { border: 2px solid #444; background: #fff; cursor: grab; max-width: 100%; height: auto; }
+        #atlasCanvas:active { cursor: grabbing; }
+        .image-list { width: 300px; background: #2a2a2a; padding: 20px; border-radius: 8px; }
+        .image-list.drag-over { background: #3a3a3a; border: 2px dashed #0066cc; }
+        .image-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #333; margin-bottom: 10px; border-radius: 4px; border: 2px solid transparent; cursor: grab; transition: background 0.2s; }
+        .image-item:hover { background: #404040; }
+        .image-item:active { cursor: grabbing; }
+        .image-item.selected { border-color: #0066cc; }
+        .image-item.unassigned { background: #444; border-color: #666; }
+        .image-item.dragging { opacity: 0.7; transform: scale(0.95); }
+        .slot-highlight { background: rgba(0, 255, 0, 0.2) !important; }
+        .image-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .image-info { flex: 1; }
+        .image-name { font-weight: bold; font-size: 12px; margin-bottom: 2px; }
+        .image-size { font-size: 10px; color: #aaa; }
+        .remove-btn { background: #cc0000; color: white; border: none; padding: 5px 8px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+        .remove-btn:hover { background: #990000; }
+        .file-input-container { margin-bottom: 20px; }
+        .file-input-label { display: inline-block; background: #0066cc; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .file-input-label:hover { background: #0052a3; }
+        #fileInput { display: none; }
+        .grid-overlay { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 10; }
+        .canvas-wrapper { position: relative; display: inline-block; }
+        .export-controls { margin-top: 20px; display: flex; gap: 10px; }
+        .drop-zone { border: 2px dashed transparent; padding: 10px; margin-bottom: 10px; text-align: center; color: #aaa; font-size: 12px; transition: all 0.3s; }
+        .drop-zone.drag-over { border-color: #0066cc; background: rgba(0, 102, 204, 0.1); color: #fff; }
+        /* Swatches */
+        .swatches { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .swatch-btn { width: 24px; height: 24px; border-radius: 4px; border: 2px solid #555; cursor: pointer; }
+        .swatch-btn[aria-checked="true"] { outline: 2px solid #00a2ff; }
+        .chip { padding: 6px 10px; border: 1px solid #555; border-radius: 6px; background: #333; cursor: pointer; font-size: 12px; }
+        .chip.active { border-color: #00a2ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generador de Atlas de Texturas</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Resolución:</label>
+                <select id="resolution">
+                    <option value="512">512x512</option>
+                    <option value="1024" selected>1024x1024</option>
+                    <option value="2048">2048x2048</option>
+                    <option value="4096">4096x4096</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Divisiones X:</label>
+                <input type="number" id="gridX" min="1" max="10" value="2">
+            </div>
+            <div class="control-group">
+                <label>Divisiones Y:</label>
+                <input type="number" id="gridY" min="1" max="10" value="2">
+            </div>
+
+            <!-- NUEVO: fondo del atlas -->
+            <div class="control-group" style="min-width:240px;">
+                <label>Fondo del atlas:</label>
+                <div class="swatches" id="bgSwatches" role="radiogroup" aria-label="Colores de fondo">
+                    <button class="swatch-btn" data-color="#ffffff" style="background:#ffffff;" aria-checked="true" title="Blanco"></button>
+                    <button class="swatch-btn" data-color="#cccccc" style="background:#cccccc;" title="Gris claro"></button>
+                    <button class="swatch-btn" data-color="#808080" style="background:#808080;" title="Gris"></button>
+                    <button class="swatch-btn" data-color="#000000" style="background:#000000;" title="Negro"></button>
+                    <button class="swatch-btn" data-color="#ff0000" style="background:#ff0000;" title="Rojo"></button>
+                    <button class="swatch-btn" data-color="#00ff00" style="background:#00ff00;" title="Verde"></button>
+                    <button class="swatch-btn" data-color="#0000ff" style="background:#0000ff;" title="Azul"></button>
+                    <button class="chip" id="bgTransparent" data-transparent="true">Transparente</button>
+                    <input type="color" id="bgColorPicker" value="#ffffff" title="Elegir color" style="margin-left:6px; width:38px; height:28px; padding:0; border:none;">
+                </div>
+            </div>
+
+            <button onclick="updateAtlas()">Actualizar Atlas</button>
+            <button onclick="clearAtlas()">Limpiar</button>
+        </div>
+
+        <div class="atlas-container">
+            <div class="atlas-canvas-container">
+                <div class="canvas-wrapper">
+                    <canvas id="atlasCanvas" width="1024" height="1024"></canvas>
+                    <canvas id="gridOverlay" class="grid-overlay" width="1024" height="1024"></canvas>
+                </div>
+                <div class="export-controls">
+                    <button onclick="downloadAtlas()">Descargar Atlas</button>
+                    <button onclick="exportUV()">Exportar Coordenadas UV</button>
+                </div>
+            </div>
+
+            <div class="image-list" id="imageListContainer">
+                <h3>Texturas</h3>
+                <div class="drop-zone" id="dropZone">Arrastra imágenes aquí o</div>
+                <div class="file-input-container">
+                    <label for="fileInput" class="file-input-label">Agregar Imágenes</label>
+                    <input type="file" id="fileInput" multiple accept="image/*">
+                </div>
+                <div id="imageList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Helpers
+        function preventDefaults(e){ e.preventDefault(); e.stopPropagation(); }
+        const supportsCreateImageBitmap = 'createImageBitmap' in window;
+
+        class TextureAtlas {
+            constructor() {
+                this.canvas = document.getElementById('atlasCanvas');
+                this.ctx = this.canvas.getContext('2d', { alpha: true });
+                this.gridCanvas = document.getElementById('gridOverlay');
+                this.gridCtx = this.gridCanvas.getContext('2d', { alpha: true });
+
+                this.images = [];
+                this.gridX = 2;
+                this.gridY = 2;
+                this.resolution = 1024;
+
+                // Fondo
+                this.backgroundTransparent = false;
+                this.backgroundColor = '#ffffff';
+
+                // Drag state
+                this.highlightedSlot = null;
+                this.isDragging = false;
+                this.draggedImageIndex = -1;
+
+                // RAF batching
+                this.needsDrawAtlas = false;
+                this.needsDrawGrid = false;
+                this._rafId = null;
+
+                // Fixed CSS display size
+                this.canvas.style.width = '500px';
+                this.canvas.style.height = '500px';
+                this.gridCanvas.style.width = '500px';
+                this.gridCanvas.style.height = '500px';
+
+                this.setupEventListeners();
+                this.updateAtlas();
+            }
+
+            setupEventListeners() {
+                // Inputs
+                document.getElementById('fileInput').addEventListener('change', (e) => this.handleFileSelect(e));
+                document.getElementById('resolution').addEventListener('change', (e) => this.updateResolution(e));
+                document.getElementById('gridX').addEventListener('change', () => this.updateGrid());
+                document.getElementById('gridY').addEventListener('change', () => this.updateGrid());
+
+                // Fondo: swatches y picker
+                const swatchContainer = document.getElementById('bgSwatches');
+                swatchContainer.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.swatch-btn');
+                    const chip = e.target.closest('#bgTransparent');
+                    if (btn) {
+                        this.backgroundTransparent = false;
+                        this.backgroundColor = btn.dataset.color;
+                        document.getElementById('bgColorPicker').value = this.toHex(this.backgroundColor);
+                        this.updateSwatchUI(btn);
+                        this.scheduleDrawAtlas();
+                    } else if (chip) {
+                        this.backgroundTransparent = true;
+                        this.updateSwatchUI(chip);
+                        this.scheduleDrawAtlas();
+                    }
+                });
+                document.getElementById('bgColorPicker').addEventListener('input', (e) => {
+                    this.backgroundTransparent = false;
+                    this.backgroundColor = e.target.value;
+                    this.updateSwatchUI(e.target);
+                    this.scheduleDrawAtlas();
+                });
+
+                // Canvas DnD desde lista / archivos
+                this.canvas.addEventListener('dragover', (e) => this.handleCanvasDragOver(e));
+                this.canvas.addEventListener('drop', (e) => this.handleCanvasDrop(e));
+                this.canvas.addEventListener('dragleave', () => this.clearSlotHighlight());
+
+                // Canvas drag interno
+                this.canvas.addEventListener('mousedown', (e) => this.handleCanvasMouseDown(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleCanvasMouseMove(e), { passive: true });
+                this.canvas.addEventListener('mouseup', () => this.handleCanvasMouseUp(), { passive: true });
+                this.canvas.addEventListener('mouseleave', () => this.handleCanvasMouseUp(), { passive: true });
+
+                // Drag & drop lista
+                const imageListContainer = document.getElementById('imageListContainer');
+                const dropZone = document.getElementById('dropZone');
+                ['dragenter','dragover','dragleave','drop'].forEach(ev=>{
+                    imageListContainer.addEventListener(ev, preventDefaults, false);
+                    dropZone.addEventListener(ev, preventDefaults, false);
+                });
+                ['dragenter','dragover'].forEach(ev=>{
+                    imageListContainer.addEventListener(ev, ()=> imageListContainer.classList.add('drag-over'));
+                    dropZone.addEventListener(ev, ()=>{
+                        dropZone.classList.add('drag-over');
+                        dropZone.textContent = 'Suelta las imágenes aquí';
+                    });
+                });
+                ['dragleave','drop'].forEach(ev=>{
+                    imageListContainer.addEventListener(ev, ()=> imageListContainer.classList.remove('drag-over'));
+                    dropZone.addEventListener(ev, ()=>{
+                        dropZone.classList.remove('drag-over');
+                        dropZone.textContent = 'Arrastra imágenes aquí o';
+                    });
+                });
+                imageListContainer.addEventListener('drop', (e)=> this.handleDropFiles(e));
+                dropZone.addEventListener('drop', (e)=> this.handleDropFiles(e));
+            }
+
+            // UI helpers
+            toHex(color){
+                // Admite #rrggbb o rgb(...)
+                if (color.startsWith('#')) return color;
+                const m = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/i);
+                if (!m) return '#ffffff';
+                const [r,g,b] = m.slice(1).map(n=>parseInt(n,10));
+                return '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+            }
+            updateSwatchUI(activeEl){
+                // Reset
+                document.querySelectorAll('.swatch-btn').forEach(b=>b.setAttribute('aria-checked','false'));
+                document.getElementById('bgTransparent').classList.remove('active');
+                // Mark
+                if (activeEl.classList.contains('swatch-btn')){
+                    activeEl.setAttribute('aria-checked','true');
+                }
+                if (activeEl.id === 'bgTransparent'){
+                    activeEl.classList.add('active');
+                }
+            }
+
+            // Files
+            async loadImageFile(file) {
+                try{
+                    let imgEl;
+                    if (supportsCreateImageBitmap) {
+                        const bitmap = await createImageBitmap(file);
+                        // Convertir a <img> vía canvas temporal
+                        const off = document.createElement('canvas');
+                        off.width = bitmap.width; off.height = bitmap.height;
+                        const octx = off.getContext('2d');
+                        octx.drawImage(bitmap, 0, 0);
+                        imgEl = new Image();
+                        imgEl.src = off.toDataURL(); // compatible con el resto del flujo
+                    } else {
+                        imgEl = new Image();
+                        imgEl.src = URL.createObjectURL(file);
+                        imgEl.onload = ()=> URL.revokeObjectURL(imgEl.src);
+                        await new Promise(res=> imgEl.onload = res);
+                    }
+                    this.images.push({ img: imgEl, name: file.name, gridX: -1, gridY: -1, assigned: false });
+                    this.updateImageList();
+                    this.scheduleDrawAtlas();
+                }catch(e){
+                    console.error('Error cargando imagen:', e);
+                }
+            }
+            handleDropFiles(event) {
+                const files = Array.from(event.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+                files.forEach(f => this.loadImageFile(f));
+            }
+            handleFileSelect(event) {
+                const files = Array.from(event.target.files);
+                files.forEach(f => this.loadImageFile(f));
+                event.target.value = '';
+            }
+
+            // Config
+            updateResolution(event) {
+                this.resolution = parseInt(event.target.value);
+                this.canvas.width = this.resolution;
+                this.canvas.height = this.resolution;
+                this.gridCanvas.width = this.resolution;
+                this.gridCanvas.height = this.resolution;
+                this.scheduleDrawGrid();
+                this.scheduleDrawAtlas();
+            }
+            updateGrid() {
+                this.gridX = Math.max(1, parseInt(document.getElementById('gridX').value) || 1);
+                this.gridY = Math.max(1, parseInt(document.getElementById('gridY').value) || 1);
+                this.scheduleDrawGrid();
+                this.scheduleDrawAtlas();
+            }
+            updateAtlas() {
+                this.scheduleDrawGrid();
+                this.scheduleDrawAtlas();
+            }
+
+            // Drawing (batched con RAF)
+            scheduleDrawGrid(){ this.needsDrawGrid = true; this.requestFrame(); }
+            scheduleDrawAtlas(){ this.needsDrawAtlas = true; this.requestFrame(); }
+            requestFrame(){
+                if (this._rafId !== null) return;
+                this._rafId = requestAnimationFrame(()=> {
+                    this._rafId = null;
+                    if (this.needsDrawGrid){ this.drawGrid(); this.needsDrawGrid = false; }
+                    if (this.needsDrawAtlas){ this.drawAtlas(); this.needsDrawAtlas = false; }
+                });
+            }
+
+            drawGrid() {
+                const g = this.gridCtx;
+                g.clearRect(0, 0, this.gridCanvas.width, this.gridCanvas.height);
+                g.strokeStyle = '#ff0000';
+                g.lineWidth = Math.max(2, this.resolution / 512);
+
+                const cw = this.resolution / this.gridX;
+                const ch = this.resolution / this.gridY;
+
+                for (let i = 0; i <= this.gridX; i++) {
+                    const x = i * cw; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, this.resolution); g.stroke();
+                }
+                for (let i = 0; i <= this.gridY; i++) {
+                    const y = i * ch; g.beginPath(); g.moveTo(0, y); g.lineTo(this.resolution, y); g.stroke();
+                }
+            }
+
+            drawAtlas() {
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Fondo
+                if (!this.backgroundTransparent) {
+                    ctx.fillStyle = this.backgroundColor || '#ffffff';
+                    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                }
+
+                const cw = this.resolution / this.gridX;
+                const ch = this.resolution / this.gridY;
+
+                // Texturas
+                for (let i=0;i<this.images.length;i++){
+                    const imgData = this.images[i];
+                    if (imgData.assigned && imgData.gridX >= 0 && imgData.gridY >= 0) {
+                        const x = imgData.gridX * cw;
+                        const y = imgData.gridY * ch;
+                        if (this.isDragging && i === this.draggedImageIndex) {
+                            ctx.strokeStyle = '#999';
+                            ctx.setLineDash([5,5]);
+                            ctx.lineWidth = 2;
+                            ctx.strokeRect(x, y, cw, ch);
+                            ctx.setLineDash([]);
+                        } else {
+                            ctx.drawImage(imgData.img, x, y, cw, ch);
+                        }
+                    }
+                }
+
+                // Highlight
+                if (this.highlightedSlot) {
+                    const x = this.highlightedSlot.gridX * cw;
+                    const y = this.highlightedSlot.gridY * ch;
+                    ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+                    ctx.fillRect(x, y, cw, ch);
+                }
+            }
+
+            // Canvas DnD / drag interno
+            handleCanvasDragOver(event) {
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                const {gridX, gridY} = this.getGridFromEvent(event);
+                if (this.validCell(gridX, gridY)) {
+                    this.highlightedSlot = { gridX, gridY };
+                    this.scheduleDrawAtlas();
+                }
+            }
+            handleCanvasDrop(event) {
+                event.preventDefault();
+                const files = Array.from(event.dataTransfer.files).filter(f=>f.type.startsWith('image/'));
+                if (files.length > 0) {
+                    // Soltar archivos directamente en el slot calculado
+                    const {gridX, gridY} = this.getGridFromEvent(event);
+                    if (!this.validCell(gridX, gridY)) return;
+
+                    files.forEach(async (file) => {
+                        let imgEl;
+                        if (supportsCreateImageBitmap) {
+                            const bmp = await createImageBitmap(file);
+                            const off = document.createElement('canvas');
+                            off.width = bmp.width; off.height = bmp.height;
+                            const octx = off.getContext('2d');
+                            octx.drawImage(bmp, 0, 0);
+                            imgEl = new Image();
+                            imgEl.src = off.toDataURL();
+                        } else {
+                            imgEl = new Image();
+                            imgEl.src = URL.createObjectURL(file);
+                            await new Promise(res=> imgEl.onload = res);
+                            URL.revokeObjectURL(imgEl.src);
+                        }
+
+                        // Si ocupado, desasignar
+                        const existing = this.images.findIndex(img => img.assigned && img.gridX === gridX && img.gridY === gridY);
+                        if (existing !== -1) {
+                            this.images[existing].assigned = false;
+                            this.images[existing].gridX = -1;
+                            this.images[existing].gridY = -1;
+                        }
+                        this.images.push({ img: imgEl, name: file.name, gridX, gridY, assigned: true });
+                        this.updateImageList();
+                        this.scheduleDrawAtlas();
+                    });
+                } else {
+                    // Desde lista
+                    const imageIndex = parseInt(event.dataTransfer.getData('text/plain'));
+                    if (this.highlightedSlot && imageIndex >= 0) {
+                        const gx = this.highlightedSlot.gridX, gy = this.highlightedSlot.gridY;
+                        const existingIndex = this.images.findIndex(img => img.assigned && img.gridX === gx && img.gridY === gy);
+                        if (existingIndex !== -1) {
+                            this.images[existingIndex].assigned = false;
+                            this.images[existingIndex].gridX = -1;
+                            this.images[existingIndex].gridY = -1;
+                        }
+                        this.images[imageIndex].gridX = gx;
+                        this.images[imageIndex].gridY = gy;
+                        this.images[imageIndex].assigned = true;
+                    }
+                }
+                this.clearSlotHighlight();
+                this.updateImageList();
+                this.scheduleDrawAtlas();
+            }
+
+            handleCanvasMouseDown(event) {
+                const {gridX, gridY} = this.getGridFromEvent(event);
+                const idx = this.images.findIndex(img => img.assigned && img.gridX === gridX && img.gridY === gridY);
+                if (idx !== -1) {
+                    this.isDragging = true;
+                    this.draggedImageIndex = idx;
+                    this.canvas.style.cursor = 'grabbing';
+                    this.scheduleDrawAtlas();
+                }
+            }
+            handleCanvasMouseMove(event) {
+                if (!this.isDragging) return;
+                const {gridX, gridY} = this.getGridFromEvent(event);
+                if (this.validCell(gridX, gridY)) {
+                    this.highlightedSlot = { gridX, gridY };
+                    this.scheduleDrawAtlas();
+                } else {
+                    this.highlightedSlot = null;
+                    this.scheduleDrawAtlas();
+                }
+            }
+            handleCanvasMouseUp() {
+                if (this.isDragging && this.highlightedSlot && this.draggedImageIndex !== -1) {
+                    const dragged = this.images[this.draggedImageIndex];
+                    const {gridX, gridY} = this.highlightedSlot;
+                    const existingIndex = this.images.findIndex((img, i) =>
+                        img.assigned && img.gridX === gridX && img.gridY === gy && i !== this.draggedImageIndex
+                    );
+                    // Nota: corregimos variable gy (typo) usando gridY:
+                    const _existingIndex = this.images.findIndex((img, i) =>
+                        img.assigned && img.gridX === gridX && img.gridY === gridY && i !== this.draggedImageIndex
+                    );
+                    if (_existingIndex !== -1) {
+                        const existing = this.images[_existingIndex];
+                        const tx = dragged.gridX, ty = dragged.gridY;
+                        dragged.gridX = existing.gridX; dragged.gridY = existing.gridY;
+                        existing.gridX = tx; existing.gridY = ty;
+                    } else {
+                        dragged.gridX = gridX; dragged.gridY = gridY;
+                    }
+                    this.updateImageList();
+                }
+                this.isDragging = false;
+                this.draggedImageIndex = -1;
+                this.canvas.style.cursor = 'grab';
+                this.clearSlotHighlight();
+            }
+
+            clearSlotHighlight(){ this.highlightedSlot = null; this.scheduleDrawAtlas(); }
+            validCell(gx, gy){ return gx>=0 && gy>=0 && gx<this.gridX && gy<this.gridY; }
+            getGridFromEvent(event){
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.resolution / rect.width;
+                const scaleY = this.resolution / rect.height;
+                const x = (event.clientX - rect.left) * scaleX;
+                const y = (event.clientY - rect.top) * scaleY;
+                const cw = this.resolution / this.gridX;
+                const ch = this.resolution / this.gridY;
+                return { gridX: Math.floor(x / cw), gridY: Math.floor(y / ch) };
+            }
+
+            // Lista
+            updateImageList() {
+                const list = document.getElementById('imageList');
+                list.innerHTML = '';
+                this.images.forEach((imageData, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'image-item';
+                    item.draggable = true;
+                    if (!imageData.assigned) item.classList.add('unassigned');
+                    item.innerHTML = `
+                        <img src="${imageData.img.src}" class="image-preview" alt="${imageData.name}">
+                        <div class="image-info">
+                            <div class="image-name">${imageData.name}</div>
+                            <div class="image-size">${imageData.assigned ? `Slot: ${imageData.gridX}, ${imageData.gridY}` : 'Sin asignar'}</div>
+                        </div>
+                        <button class="remove-btn" onclick="atlas.removeImage(${index})">X</button>
+                    `;
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', index.toString());
+                        item.classList.add('dragging');
+                    });
+                    item.addEventListener('dragend', () => item.classList.remove('dragging'));
+                    item.addEventListener('dblclick', () => {
+                        if (imageData.assigned) {
+                            imageData.assigned = false; imageData.gridX = -1; imageData.gridY = -1;
+                            this.updateImageList(); this.scheduleDrawAtlas();
+                        }
+                    });
+                    list.appendChild(item);
+                });
+            }
+
+            // Mutaciones
+            removeImage(index) {
+                this.images.splice(index, 1);
+                this.updateImageList();
+                this.scheduleDrawAtlas();
+            }
+            clearAtlas() {
+                this.images = [];
+                this.updateImageList();
+                this.scheduleDrawAtlas();
+            }
+
+            // Export
+            downloadAtlas() {
+                const link = document.createElement('a');
+                link.download = `atlas_${this.gridX}x${this.gridY}_${this.resolution}.png`;
+                link.href = this.canvas.toDataURL();
+                link.click();
+            }
+            exportUV() {
+                const uvData = this.images
+                    .filter(img => img.assigned)
+                    .map((img) => {
+                        const u = img.gridX / this.gridX;
+                        const v = img.gridY / this.gridY;
+                        const uWidth = 1.0 / this.gridX;
+                        const vHeight = 1.0 / this.gridY;
+                        return {
+                            name: img.name, gridX: img.gridX, gridY: img.gridY,
+                            u, v, uWidth, vHeight, uMax: u + uWidth, vMax: v + vHeight
+                        };
+                    });
+                const dataStr = JSON.stringify(uvData, null, 2);
+                const url = URL.createObjectURL(new Blob([dataStr], {type:'application/json'}));
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `uv_coordinates_${this.gridX}x${this.gridY}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Init
+        const atlas = new TextureAtlas();
+
+        // Botones globales
+        function updateAtlas(){ atlas.updateAtlas(); }
+        function clearAtlas(){ atlas.clearAtlas(); }
+        function downloadAtlas(){ atlas.downloadAtlas(); }
+        function exportUV(){ atlas.exportUV(); }
+    </script>
+</body>
+</html>

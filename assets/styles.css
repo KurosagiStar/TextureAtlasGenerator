@@ -58,11 +58,13 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  padding: 28px 34px;
 }
 
 /* ===== Barra Superior (con espacio amplio respecto a los bordes del box) ===== */
+.controls,
 .toolbar {
-  padding: 28px 34px;
+  padding: 28px 34px !important;
   display: flex;
   flex-direction: column;
   gap: 24px;

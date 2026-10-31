@@ -13,22 +13,22 @@
 
   <main class="container">
     <section class="toolbar card">
-      <!-- Fila principal de configuración -->
+      <!-- Fila principal: aprovecha todo el espacio horizontal -->
       <div class="toolbar-row">
-        <div class="control-group field-name">
+        <div class="control-group col-name">
           <label for="baseName">Nombre común (base)</label>
           <input type="text" id="baseName" class="input" value="Atlas" placeholder="Ej: MiPersonaje_Ropa" />
         </div>
 
-        <div class="control-group field-mode">
+        <div class="control-group col-mode">
           <label>Modo de trabajo</label>
-          <div class="segmented-control" id="modeToggle">
-            <button type="button" class="seg-btn active" data-mode="single">Uno solo</button>
-            <button type="button" class="seg-btn" data-mode="multi">Varios a la vez (PBR)</button>
+          <div class="action-group" id="modeToggle">
+            <button type="button" class="btn btn-sm" data-mode="single">Uno solo</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-mode="multi">Varios a la vez (PBR)</button>
           </div>
         </div>
 
-        <div class="control-group field-select">
+        <div class="control-group col-select">
           <label for="resolution">Resolución</label>
           <select id="resolution" class="input">
             <option value="512">512 × 512 px</option>
@@ -38,7 +38,7 @@
           </select>
         </div>
 
-        <div class="control-group field-select">
+        <div class="control-group col-select">
           <label for="gridPreset">Divisiones</label>
           <select id="gridPreset" class="input">
             <option value="2x2" selected>2 × 2 (4 slots)</option>
@@ -48,6 +48,35 @@
             <option value="6x6">6 × 6 (36 slots)</option>
             <option value="8x8">8 × 8 (64 slots)</option>
           </select>
+        </div>
+
+        <div class="control-group col-bg">
+          <label>Fondo del atlas</label>
+          <div class="swatches" id="bgSwatches" role="radiogroup" aria-label="Colores de fondo">
+            <button type="button" class="swatch-btn" data-color="#ffffff" aria-checked="true" title="Blanco" style="--sw: #ffffff"></button>
+            <button type="button" class="swatch-btn" data-color="#cccccc" title="Gris claro" style="--sw: #cccccc"></button>
+            <button type="button" class="swatch-btn" data-color="#808080" title="Gris medio" style="--sw: #808080"></button>
+            <button type="button" class="swatch-btn" data-color="#000000" title="Negro" style="--sw: #000000"></button>
+            <button type="button" class="swatch-btn" data-color="#8080ff" title="Normal Map (#8080ff)" style="--sw: #8080ff"></button>
+            <button type="button" class="swatch-btn" data-color="#ff0000" title="Rojo" style="--sw: #ff0000"></button>
+            <button type="button" class="swatch-btn" data-color="#00ff00" title="Verde" style="--sw: #00ff00"></button>
+            <button type="button" class="swatch-btn" data-color="#0000ff" title="Azul" style="--sw: #0000ff"></button>
+
+            <button type="button" class="btn btn-secondary btn-xs" id="bgTransparent" data-transparent="true">Transparente</button>
+
+            <div class="color-picker-wrap" title="Elegir color personalizado">
+              <button type="button" class="color-chip-gradient" aria-label="Elegir color"></button>
+              <input type="color" id="bgColorPicker" value="#ffffff" class="color-input-native" />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group col-actions">
+          <label>&nbsp;</label>
+          <div class="action-group">
+            <button type="button" class="btn btn-secondary" onclick="app.clearAll()">Limpiar Todo</button>
+            <button type="button" class="btn" onclick="app.downloadAll()">⬇ Descargar Todo</button>
+          </div>
         </div>
       </div>
 
@@ -64,42 +93,11 @@
           </div>
         </div>
       </div>
-
-      <!-- Fila inferior: Fondo y Acciones Globales -->
-      <div class="toolbar-row toolbar-footer">
-        <div class="control-group field-bg">
-          <label>Fondo del atlas</label>
-          <div class="swatches" id="bgSwatches" role="radiogroup" aria-label="Colores de fondo">
-            <button class="swatch-btn" data-color="#ffffff" aria-checked="true" title="Blanco" style="--sw: #ffffff"></button>
-            <button class="swatch-btn" data-color="#cccccc" title="Gris claro" style="--sw: #cccccc"></button>
-            <button class="swatch-btn" data-color="#808080" title="Gris medio" style="--sw: #808080"></button>
-            <button class="swatch-btn" data-color="#000000" title="Negro" style="--sw: #000000"></button>
-            <button class="swatch-btn" data-color="#8080ff" title="Normal Map (#8080ff)" style="--sw: #8080ff"></button>
-            <button class="swatch-btn" data-color="#ff0000" title="Rojo" style="--sw: #ff0000"></button>
-            <button class="swatch-btn" data-color="#00ff00" title="Verde" style="--sw: #00ff00"></button>
-            <button class="swatch-btn" data-color="#0000ff" title="Azul" style="--sw: #0000ff"></button>
-
-            <div class="swatch-divider"></div>
-
-            <button type="button" class="chip" id="bgTransparent" data-transparent="true">Transparente</button>
-
-            <div class="color-picker-wrap" title="Elegir color personalizado">
-              <button type="button" class="color-chip-gradient" aria-label="Elegir color"></button>
-              <input type="color" id="bgColorPicker" value="#ffffff" class="color-input-native" />
-            </div>
-          </div>
-        </div>
-
-        <div class="global-actions">
-          <button type="button" class="btn btn-secondary" onclick="app.clearAll()">Limpiar Todo</button>
-          <button type="button" class="btn btn-primary" onclick="app.downloadAll()">⬇ Descargar Todo</button>
-        </div>
-      </div>
     </section>
 
-    <div class="helper-banner">
+    <div class="helper-banner card">
       <span class="helper-badge">Atajos</span>
-      <span>Arrastra imágenes desde tu PC a cualquier celda • <strong>Doble clic</strong> en celda vacía para buscar archivo • <strong>Arrastra</strong> para intercambiar celdas • <strong>Clic derecho</strong> para vaciar celda.</span>
+      <span>Arrastra imágenes desde tu PC a cualquier celda • <strong>Doble clic</strong> en celda vacía para elegir archivo • <strong>Arrastra</strong> para intercambiar celdas • <strong>Clic derecho</strong> para vaciar celda.</span>
     </div>
 
     <section class="boards-grid" id="boardsContainer"></section>
@@ -108,7 +106,7 @@
   <input type="file" id="cellFileInput" multiple accept="image/*" style="display:none" />
 
   <footer class="page-footer">
-    <small>Generador de Atlas de Texturas</small>
+    <small>Hecho con ❤️ para tu flujo de trabajo</small>
   </footer>
 
   <script>
@@ -159,7 +157,7 @@
             </div>
             <div class="board-header-actions">
               <button class="btn btn-secondary btn-sm" type="button" title="Vaciar este cuadro" data-action="clear">Limpiar</button>
-              <button class="btn btn-primary btn-sm" type="button" title="Descargar este atlas" data-action="download">Descargar</button>
+              <button class="btn btn-sm" type="button" title="Descargar este atlas" data-action="download">Descargar</button>
             </div>
           </div>
           <div class="canvas-wrapper">
@@ -242,7 +240,7 @@
         const gy = this.manager.gridY;
 
         g.clearRect(0, 0, res, res);
-        g.strokeStyle = 'rgba(255, 77, 77, 0.75)';
+        g.strokeStyle = 'rgba(255, 77, 77, 0.78)';
         g.lineWidth = Math.max(2, res / 512);
 
         const cw = res / gx;
@@ -481,7 +479,13 @@
           const btn = e.target.closest('button[data-mode]');
           if (!btn) return;
           this.mode = btn.dataset.mode;
-          document.querySelectorAll('#modeToggle .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
+          document.querySelectorAll('#modeToggle button[data-mode]').forEach(b => {
+            if (b === btn) {
+              b.classList.remove('btn-secondary');
+            } else {
+              b.classList.add('btn-secondary');
+            }
+          });
           document.getElementById('channelSelectorGroup').style.display = this.mode === 'multi' ? '' : 'none';
           this.rebuildBoardsView();
         });
@@ -599,7 +603,7 @@
         this.channels.forEach(ch => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = `chip ${ch.active ? 'active' : ''}`;
+          btn.className = `btn btn-xs ${ch.active ? '' : 'btn-secondary'}`;
           btn.innerHTML = `${ch.label} <small>${ch.suffix}</small>`;
           btn.addEventListener('click', () => {
             const activeCount = this.channels.filter(c => c.active).length;
@@ -684,12 +688,13 @@
 
       updateSwatchUI(activeEl) {
         document.querySelectorAll('.swatch-btn').forEach(b => b.setAttribute('aria-checked', 'false'));
-        document.getElementById('bgTransparent').classList.remove('active');
+        const transBtn = document.getElementById('bgTransparent');
+        transBtn.classList.add('btn-secondary');
         if (activeEl.classList && activeEl.classList.contains('swatch-btn')) {
           activeEl.setAttribute('aria-checked', 'true');
         }
         if (activeEl.id === 'bgTransparent') {
-          activeEl.classList.add('active');
+          transBtn.classList.remove('btn-secondary');
         }
       }
     }

@@ -18,7 +18,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   min-height: 100%;
 }
 
@@ -296,10 +297,8 @@ select.input:focus {
   inset: 0;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: conic-gradient(
-    from 0deg,
-    #ff004c, #ff7a00, #ffcd00, #23d500, #00e0ff, #0066ff, #a300ff, #ff00c3, #ff004c
-  );
+  background: conic-gradient(from 0deg,
+      #ff004c, #ff7a00, #ffcd00, #23d500, #00e0ff, #0066ff, #a300ff, #ff00c3, #ff004c);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) inset;
   cursor: pointer;
 }
@@ -407,13 +406,11 @@ select.input:focus {
   border-radius: var(--radius-sm);
   overflow: hidden;
   border: 1px solid var(--border);
-  background: conic-gradient(
-    from 45deg,
-    #1b202a 0 25%,
-    #161b24 0 50%,
-    #1b202a 0 75%,
-    #161b24 0 100%
-  );
+  background: conic-gradient(from 45deg,
+      #1b202a 0 25%,
+      #161b24 0 50%,
+      #1b202a 0 75%,
+      #161b24 0 100%);
   background-size: 24px 24px;
 }
 
@@ -445,6 +442,7 @@ select.input:focus {
   .toolbar {
     padding: 20px;
   }
+
   .atlas-board {
     padding: 20px;
   }

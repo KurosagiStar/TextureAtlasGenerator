@@ -217,8 +217,6 @@
         const res = this.manager.resolution;
         this.canvas.width = res;
         this.canvas.height = res;
-        this.gridCanvas.width = res;
-        this.gridCanvas.height = res;
       }
 
       scheduleDrawGrid() { this.needsDrawGrid = true; this.requestFrame(); }
@@ -235,24 +233,36 @@
 
       drawGrid() {
         const g = this.gridCtx;
-        const res = this.manager.resolution;
         const gx = this.manager.gridX;
         const gy = this.manager.gridY;
 
-        g.clearRect(0, 0, res, res);
-        g.strokeStyle = 'rgba(255, 77, 77, 0.78)';
-        g.lineWidth = Math.max(2, res / 512);
+        // Usar el tamaño visual en pantalla (multiplicado por devicePixelRatio) para que
+        // las líneas de la cuadrícula siempre tengan un grosor nítido y constante sin importar
+        // si el cuadro es pequeño (modo PBR) o si la resolución es 4096.
+        const rect = this.canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const w = Math.max(256, Math.round((rect.width || 400) * dpr));
+        const h = Math.max(256, Math.round((rect.height || 400) * dpr));
 
-        const cw = res / gx;
-        const ch = res / gy;
+        if (this.gridCanvas.width !== w || this.gridCanvas.height !== h) {
+          this.gridCanvas.width = w;
+          this.gridCanvas.height = h;
+        }
+
+        g.clearRect(0, 0, w, h);
+        g.strokeStyle = '#ff4d4d';
+        g.lineWidth = Math.max(2, Math.round(2.5 * dpr));
+
+        const cw = w / gx;
+        const ch = h / gy;
 
         for (let i = 1; i < gx; i++) {
-          const x = i * cw;
-          g.beginPath(); g.moveTo(x, 0); g.lineTo(x, res); g.stroke();
+          const x = Math.round(i * cw);
+          g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
         }
         for (let i = 1; i < gy; i++) {
-          const y = i * ch;
-          g.beginPath(); g.moveTo(0, y); g.lineTo(res, y); g.stroke();
+          const y = Math.round(i * ch);
+          g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
         }
       }
 
@@ -565,6 +575,10 @@
           this.pendingPickerTarget = null;
           e.target.value = '';
         });
+
+        window.addEventListener('resize', () => {
+          this.forEachBoard(b => b.scheduleDrawGrid());
+        });
       }
 
       openFilePickerForCell(board, gridX, gridY) {
@@ -625,11 +639,11 @@
           if (!this.singleBoard) {
             this.singleBoard = new AtlasBoard(this, { id: 'single', label: 'Atlas Único', suffix: '' });
           }
+          container.appendChild(this.singleBoard.el);
           this.singleBoard.updateCanvasSize();
           this.singleBoard.updateFilenamePreview();
           this.singleBoard.scheduleDrawGrid();
           this.singleBoard.scheduleDrawAtlas();
-          container.appendChild(this.singleBoard.el);
         } else {
           container.classList.remove('single-mode');
           const activeChannels = this.channels.filter(c => c.active);
@@ -639,11 +653,11 @@
               board = new AtlasBoard(this, ch);
               this.boards.set(ch.id, board);
             }
+            container.appendChild(board.el);
             board.updateCanvasSize();
             board.updateFilenamePreview();
             board.scheduleDrawGrid();
             board.scheduleDrawAtlas();
-            container.appendChild(board.el);
           });
         }
       }

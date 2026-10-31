@@ -12,83 +12,95 @@
   </header>
 
   <main class="container">
-    <section class="controls card">
-      <!-- Fila 1: Nombre base, Modo y Canales -->
-      <div class="control-group span-4">
-        <label for="baseName">Nombre común (base)</label>
-        <input type="text" id="baseName" class="input" value="Atlas" placeholder="Ej: MiPersonaje_Ropa" />
-      </div>
+    <section class="toolbar card">
+      <!-- Fila principal de configuración -->
+      <div class="toolbar-row">
+        <div class="control-group field-name">
+          <label for="baseName">Nombre común (base)</label>
+          <input type="text" id="baseName" class="input" value="Atlas" placeholder="Ej: MiPersonaje_Ropa" />
+        </div>
 
-      <div class="control-group span-3">
-        <label>Modo de trabajo</label>
-        <div class="mode-toggle" id="modeToggle">
-          <button type="button" class="chip active" data-mode="single">Uno solo</button>
-          <button type="button" class="chip" data-mode="multi">Varios a la vez (PBR)</button>
+        <div class="control-group field-mode">
+          <label>Modo de trabajo</label>
+          <div class="segmented-control" id="modeToggle">
+            <button type="button" class="seg-btn active" data-mode="single">Uno solo</button>
+            <button type="button" class="seg-btn" data-mode="multi">Varios a la vez (PBR)</button>
+          </div>
+        </div>
+
+        <div class="control-group field-select">
+          <label for="resolution">Resolución</label>
+          <select id="resolution" class="input">
+            <option value="512">512 × 512 px</option>
+            <option value="1024" selected>1024 × 1024 px</option>
+            <option value="2048">2048 × 2048 px</option>
+            <option value="4096">4096 × 4096 px</option>
+          </select>
+        </div>
+
+        <div class="control-group field-select">
+          <label for="gridPreset">Divisiones</label>
+          <select id="gridPreset" class="input">
+            <option value="2x2" selected>2 × 2 (4 slots)</option>
+            <option value="3x3">3 × 3 (9 slots)</option>
+            <option value="4x4">4 × 4 (16 slots)</option>
+            <option value="5x5">5 × 5 (25 slots)</option>
+            <option value="6x6">6 × 6 (36 slots)</option>
+            <option value="8x8">8 × 8 (64 slots)</option>
+          </select>
         </div>
       </div>
 
-      <div class="control-group span-5" id="channelSelectorGroup" style="display: none;">
-        <label>Mapas activos (se añade <code>_canal</code> al nombre)</label>
-        <div class="channel-chips" id="channelChips"></div>
-        <div class="custom-channel-row">
-          <input type="text" id="customChannelInput" class="input input-sm" placeholder="Añadir canal (ej: height, mask)..." />
-          <button type="button" class="btn btn-secondary btn-sm" id="addCustomChannelBtn">+ Añadir</button>
-        </div>
-      </div>
-
-      <!-- Fila 2: Resolución, Divisiones y Fondo -->
-      <div class="control-group span-2">
-        <label for="resolution">Resolución</label>
-        <select id="resolution" class="input">
-          <option value="512">512 × 512</option>
-          <option value="1024" selected>1024 × 1024</option>
-          <option value="2048">2048 × 2048</option>
-          <option value="4096">4096 × 4096</option>
-        </select>
-      </div>
-
-      <div class="control-group span-2">
-        <label for="gridPreset">Divisiones</label>
-        <select id="gridPreset" class="input">
-          <option value="2x2" selected>2 × 2</option>
-          <option value="3x3">3 × 3</option>
-          <option value="4x4">4 × 4</option>
-          <option value="5x5">5 × 5</option>
-          <option value="6x6">6 × 6</option>
-          <option value="8x8">8 × 8</option>
-        </select>
-      </div>
-
-      <div class="control-group control-bg span-5">
-        <label>Fondo del atlas</label>
-        <div class="swatches" id="bgSwatches" role="radiogroup" aria-label="Colores de fondo">
-          <button class="swatch-btn" data-color="#ffffff" aria-checked="true" title="Blanco" style="--sw: #ffffff"></button>
-          <button class="swatch-btn" data-color="#cccccc" title="Gris claro" style="--sw: #cccccc"></button>
-          <button class="swatch-btn" data-color="#808080" title="Gris" style="--sw: #808080"></button>
-          <button class="swatch-btn" data-color="#000000" title="Negro" style="--sw: #000000"></button>
-          <button class="swatch-btn" data-color="#8080ff" title="Normal Map (#8080ff)" style="--sw: #8080ff"></button>
-          <button class="swatch-btn" data-color="#ff0000" title="Rojo" style="--sw: #ff0000"></button>
-          <button class="swatch-btn" data-color="#00ff00" title="Verde" style="--sw: #00ff00"></button>
-          <button class="swatch-btn" data-color="#0000ff" title="Azul" style="--sw: #0000ff"></button>
-
-          <button class="chip" id="bgTransparent" data-transparent="true">Transparente</button>
-
-          <div class="color-picker-wrap" title="Más colores">
-            <button type="button" class="color-chip-gradient" aria-label="Elegir color"></button>
-            <input type="color" id="bgColorPicker" value="#ffffff" class="color-input-native" />
+      <!-- Fila de canales PBR (solo visible en modo multi) -->
+      <div class="toolbar-row toolbar-channels" id="channelSelectorGroup" style="display: none;">
+        <div class="control-group full-width">
+          <label>Mapas activos <span class="label-sub">(se añade automáticamente el sufijo <code>_canal</code> al archivo)</span></label>
+          <div class="channels-bar">
+            <div class="channel-chips" id="channelChips"></div>
+            <div class="custom-channel-box">
+              <input type="text" id="customChannelInput" class="input input-sm" placeholder="Nuevo canal (ej: mask, height)..." />
+              <button type="button" class="btn btn-secondary btn-sm" id="addCustomChannelBtn">+ Añadir</button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="control-actions span-3">
-        <button class="btn" onclick="app.downloadAll()">⬇ Descargar Todo</button>
-        <button class="btn btn-secondary" onclick="app.clearAll()">Limpiar Todo</button>
+      <!-- Fila inferior: Fondo y Acciones Globales -->
+      <div class="toolbar-row toolbar-footer">
+        <div class="control-group field-bg">
+          <label>Fondo del atlas</label>
+          <div class="swatches" id="bgSwatches" role="radiogroup" aria-label="Colores de fondo">
+            <button class="swatch-btn" data-color="#ffffff" aria-checked="true" title="Blanco" style="--sw: #ffffff"></button>
+            <button class="swatch-btn" data-color="#cccccc" title="Gris claro" style="--sw: #cccccc"></button>
+            <button class="swatch-btn" data-color="#808080" title="Gris medio" style="--sw: #808080"></button>
+            <button class="swatch-btn" data-color="#000000" title="Negro" style="--sw: #000000"></button>
+            <button class="swatch-btn" data-color="#8080ff" title="Normal Map (#8080ff)" style="--sw: #8080ff"></button>
+            <button class="swatch-btn" data-color="#ff0000" title="Rojo" style="--sw: #ff0000"></button>
+            <button class="swatch-btn" data-color="#00ff00" title="Verde" style="--sw: #00ff00"></button>
+            <button class="swatch-btn" data-color="#0000ff" title="Azul" style="--sw: #0000ff"></button>
+
+            <div class="swatch-divider"></div>
+
+            <button type="button" class="chip" id="bgTransparent" data-transparent="true">Transparente</button>
+
+            <div class="color-picker-wrap" title="Elegir color personalizado">
+              <button type="button" class="color-chip-gradient" aria-label="Elegir color"></button>
+              <input type="color" id="bgColorPicker" value="#ffffff" class="color-input-native" />
+            </div>
+          </div>
+        </div>
+
+        <div class="global-actions">
+          <button type="button" class="btn btn-secondary" onclick="app.clearAll()">Limpiar Todo</button>
+          <button type="button" class="btn btn-primary" onclick="app.downloadAll()">⬇ Descargar Todo</button>
+        </div>
       </div>
     </section>
 
-    <p class="helper-hint">
-      💡 <strong>Tip:</strong> Arrastra imágenes desde tu PC directamente a cualquier celda, o haz <strong>doble clic</strong> en una celda vacía para elegir archivo. Arrastra entre celdas para intercambiar posiciones y haz <strong>clic derecho</strong> (o doble clic en celda ocupada) para vaciarla.
-    </p>
+    <div class="helper-banner">
+      <span class="helper-badge">Atajos</span>
+      <span>Arrastra imágenes desde tu PC a cualquier celda • <strong>Doble clic</strong> en celda vacía para buscar archivo • <strong>Arrastra</strong> para intercambiar celdas • <strong>Clic derecho</strong> para vaciar celda.</span>
+    </div>
 
     <section class="boards-grid" id="boardsContainer"></section>
   </main>
@@ -96,7 +108,7 @@
   <input type="file" id="cellFileInput" multiple accept="image/*" style="display:none" />
 
   <footer class="page-footer">
-    <small>Hecho con ❤️ para tu flujo de trabajo</small>
+    <small>Generador de Atlas de Texturas</small>
   </footer>
 
   <script>
@@ -117,9 +129,8 @@
         this.manager = manager;
         this.id = config.id;
         this.label = config.label;
-        this.suffix = config.suffix; // ej: '_diffuse' o '' en modo single
+        this.suffix = config.suffix;
 
-        // Mapa de celdas clave "x,y" -> { img, name }
         this.slots = new Map();
 
         this.highlightedSlot = null;
@@ -148,7 +159,7 @@
             </div>
             <div class="board-header-actions">
               <button class="btn btn-secondary btn-sm" type="button" title="Vaciar este cuadro" data-action="clear">Limpiar</button>
-              <button class="btn btn-sm" type="button" title="Descargar este atlas" data-action="download">Descargar</button>
+              <button class="btn btn-primary btn-sm" type="button" title="Descargar este atlas" data-action="download">Descargar</button>
             </div>
           </div>
           <div class="canvas-wrapper">
@@ -163,25 +174,20 @@
         this.gridCtx = this.gridCanvas.getContext('2d', { alpha: true });
         this.filenameEl = this.el.querySelector('.board-filename');
 
-        // Botones del cuadro
         this.el.querySelector('[data-action="clear"]').addEventListener('click', () => this.clear());
         this.el.querySelector('[data-action="download"]').addEventListener('click', () => this.download());
 
-        // Drag & Drop externo (archivos desde el explorador)
         this.canvas.addEventListener('dragover', (e) => this.handleDragOver(e));
         this.canvas.addEventListener('drop', (e) => this.handleDrop(e));
         this.canvas.addEventListener('dragleave', () => this.clearHighlight());
 
-        // Interacción con ratón (mover entre celdas / eliminar / cargar)
         this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e), { passive: true });
         this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e), { passive: true });
         this.canvas.addEventListener('mouseleave', () => this.cancelDrag(), { passive: true });
 
-        // Doble clic: si está ocupada la vacía, si está vacía abre selector de archivo
         this.canvas.addEventListener('dblclick', (e) => this.handleDoubleClick(e));
 
-        // Clic derecho para vaciar celda rápidamente
         this.canvas.addEventListener('contextmenu', (e) => {
           e.preventDefault();
           const { gridX, gridY } = this.getGridFromEvent(e);
@@ -236,17 +242,17 @@
         const gy = this.manager.gridY;
 
         g.clearRect(0, 0, res, res);
-        g.strokeStyle = 'rgba(255, 77, 77, 0.85)';
+        g.strokeStyle = 'rgba(255, 77, 77, 0.75)';
         g.lineWidth = Math.max(2, res / 512);
 
         const cw = res / gx;
         const ch = res / gy;
 
-        for (let i = 0; i <= gx; i++) {
+        for (let i = 1; i < gx; i++) {
           const x = i * cw;
           g.beginPath(); g.moveTo(x, 0); g.lineTo(x, res); g.stroke();
         }
-        for (let i = 0; i <= gy; i++) {
+        for (let i = 1; i < gy; i++) {
           const y = i * ch;
           g.beginPath(); g.moveTo(0, y); g.lineTo(res, y); g.stroke();
         }
@@ -292,7 +298,7 @@
         if (this.highlightedSlot) {
           const x = this.highlightedSlot.gridX * cw;
           const y = this.highlightedSlot.gridY * ch;
-          ctx.fillStyle = 'rgba(0, 162, 255, 0.28)';
+          ctx.fillStyle = 'rgba(0, 162, 255, 0.25)';
           ctx.fillRect(x, y, cw, ch);
         }
       }
@@ -354,7 +360,7 @@
       }
 
       handleMouseDown(event) {
-        if (event.button !== 0) return; // Solo clic izquierdo
+        if (event.button !== 0) return;
         const { gridX, gridY } = this.getGridFromEvent(event);
         const key = `${gridX},${gridY}`;
         if (this.slots.has(key)) {
@@ -426,7 +432,6 @@
       }
 
       download() {
-        // Asegurar que el canvas esté renderizado sin highlight antes de exportar
         const prevHighlight = this.highlightedSlot;
         const prevDragging = this.isDragging;
         this.highlightedSlot = null;
@@ -446,7 +451,7 @@
 
     class AtlasApp {
       constructor() {
-        this.mode = 'single'; // 'single' o 'multi'
+        this.mode = 'single';
         this.baseName = 'Atlas';
         this.resolution = 1024;
         this.gridX = 2;
@@ -455,7 +460,7 @@
         this.backgroundColor = '#ffffff';
 
         this.channels = DEFAULT_CHANNELS.map(c => ({ ...c }));
-        this.boards = new Map(); // id -> AtlasBoard
+        this.boards = new Map();
         this.singleBoard = null;
 
         this.pendingPickerTarget = null;
@@ -466,24 +471,21 @@
       }
 
       setupEventListeners() {
-        // Nombre común
         const baseNameInput = document.getElementById('baseName');
         baseNameInput.addEventListener('input', (e) => {
           this.baseName = e.target.value;
           this.updateAllFilenames();
         });
 
-        // Modo (Uno solo vs Varios a la vez)
         document.getElementById('modeToggle').addEventListener('click', (e) => {
           const btn = e.target.closest('button[data-mode]');
           if (!btn) return;
           this.mode = btn.dataset.mode;
-          document.querySelectorAll('#modeToggle .chip').forEach(b => b.classList.toggle('active', b === btn));
+          document.querySelectorAll('#modeToggle .seg-btn').forEach(b => b.classList.toggle('active', b === btn));
           document.getElementById('channelSelectorGroup').style.display = this.mode === 'multi' ? '' : 'none';
           this.rebuildBoardsView();
         });
 
-        // Añadir canal personalizado
         const addChannel = () => {
           const input = document.getElementById('customChannelInput');
           const raw = input.value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
@@ -506,7 +508,6 @@
           if (e.key === 'Enter') { e.preventDefault(); addChannel(); }
         });
 
-        // Resolución y Grid
         document.getElementById('resolution').addEventListener('change', (e) => {
           this.resolution = parseInt(e.target.value, 10);
           this.forEachBoard(b => {
@@ -526,7 +527,6 @@
           });
         });
 
-        // Fondo: swatches y picker
         const swatchContainer = document.getElementById('bgSwatches');
         swatchContainer.addEventListener('click', (e) => {
           const btn = e.target.closest('.swatch-btn');
@@ -551,7 +551,6 @@
           this.forEachBoard(b => b.scheduleDrawAtlas());
         });
 
-        // Selector de archivo al hacer doble clic en celda vacía
         const cellFileInput = document.getElementById('cellFileInput');
         cellFileInput.addEventListener('change', async (e) => {
           const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
@@ -603,7 +602,6 @@
           btn.className = `chip ${ch.active ? 'active' : ''}`;
           btn.innerHTML = `${ch.label} <small>${ch.suffix}</small>`;
           btn.addEventListener('click', () => {
-            // Evitar apagar todos los canales
             const activeCount = this.channels.filter(c => c.active).length;
             if (ch.active && activeCount <= 1) return;
             ch.active = !ch.active;

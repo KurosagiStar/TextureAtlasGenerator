@@ -324,8 +324,9 @@ label code {
   transition: color 0.2s ease;
 }
 
-.input-with-icon .input {
-  padding-left: 36px;
+.input-with-icon .input,
+.input-with-icon input[type="text"].input {
+  padding-left: 38px;
 }
 
 .input-with-icon:focus-within svg {

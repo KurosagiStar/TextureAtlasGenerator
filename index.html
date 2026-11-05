@@ -3,28 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Generador de Atlas de Texturas</title>
-  <link rel="stylesheet" href="assets/styles.css?v=3"/>
+  <title>Generador de Atlas de Texturas — PBR Studio</title>
+  <link rel="stylesheet" href="assets/styles.css?v=4"/>
 </head>
 <body>
   <header class="page-header">
-    <h1>Generador de Atlas de Texturas</h1>
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>
+          Generador de Atlas de Texturas
+          <span class="brand-badge">PBR Studio</span>
+        </h1>
+        <p class="brand-subtitle">Empaqueta texturas individuales o canales PBR completos en segundos</p>
+      </div>
+    </div>
+
+    <div class="header-meta">
+      <div class="stat-pill" id="headerSummaryPill" title="Configuración actual del proyecto">
+        <span class="dot"></span>
+        <span id="headerSummaryText">1024×1024 • 2×2 (4 slots)</span>
+      </div>
+    </div>
   </header>
 
   <main class="container">
-    <section class="controls toolbar card">
-      <!-- Fila principal: aprovecha todo el espacio horizontal -->
+    <section class="controls toolbar card" aria-label="Configuración del Atlas">
+      <!-- Fila principal -->
       <div class="toolbar-row">
         <div class="control-group col-name">
           <label for="baseName">Nombre común (base)</label>
-          <input type="text" id="baseName" class="input" value="Atlas" placeholder="Ej: MiPersonaje_Ropa" />
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <input type="text" id="baseName" class="input" value="Atlas" placeholder="Ej: MiPersonaje_Ropa" />
+          </div>
         </div>
 
         <div class="control-group col-mode">
           <label>Modo de trabajo</label>
-          <div class="action-group" id="modeToggle">
-            <button type="button" class="btn btn-sm" data-mode="single">Uno solo</button>
-            <button type="button" class="btn btn-secondary btn-sm" data-mode="multi">Varios a la vez (PBR)</button>
+          <div class="segmented-control" id="modeToggle" role="group" aria-label="Modo de trabajo">
+            <button type="button" class="seg-btn active" data-mode="single">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+              </svg>
+              Uno solo
+            </button>
+            <button type="button" class="seg-btn" data-mode="multi">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                <polyline points="2 17 12 22 22 17"/>
+                <polyline points="2 12 12 17 22 12"/>
+              </svg>
+              Varios a la vez (PBR)
+            </button>
           </div>
         </div>
 
@@ -53,20 +94,25 @@
         <div class="control-group col-bg">
           <label>Fondo del atlas</label>
           <div class="swatches" id="bgSwatches" role="radiogroup" aria-label="Colores de fondo">
-            <button type="button" class="swatch-btn" data-color="#ffffff" aria-checked="true" title="Blanco" style="--sw: #ffffff"></button>
-            <button type="button" class="swatch-btn" data-color="#cccccc" title="Gris claro" style="--sw: #cccccc"></button>
-            <button type="button" class="swatch-btn" data-color="#808080" title="Gris medio" style="--sw: #808080"></button>
-            <button type="button" class="swatch-btn" data-color="#000000" title="Negro" style="--sw: #000000"></button>
-            <button type="button" class="swatch-btn" data-color="#8080ff" title="Normal Map (#8080ff)" style="--sw: #8080ff"></button>
-            <button type="button" class="swatch-btn" data-color="#ff0000" title="Rojo" style="--sw: #ff0000"></button>
-            <button type="button" class="swatch-btn" data-color="#00ff00" title="Verde" style="--sw: #00ff00"></button>
-            <button type="button" class="swatch-btn" data-color="#0000ff" title="Azul" style="--sw: #0000ff"></button>
+            <button type="button" class="swatch-btn" data-color="#ffffff" aria-checked="true" aria-label="Blanco" title="Blanco (#ffffff)" style="--sw: #ffffff"></button>
+            <button type="button" class="swatch-btn" data-color="#cccccc" aria-checked="false" aria-label="Gris claro" title="Gris claro (#cccccc)" style="--sw: #cccccc"></button>
+            <button type="button" class="swatch-btn" data-color="#808080" aria-checked="false" aria-label="Gris medio" title="Gris medio (#808080)" style="--sw: #808080"></button>
+            <button type="button" class="swatch-btn" data-color="#000000" aria-checked="false" aria-label="Negro" title="Negro (#000000)" style="--sw: #000000"></button>
+            <button type="button" class="swatch-btn" data-color="#8080ff" aria-checked="false" aria-label="Normal Map" title="Normal Map (#8080ff)" style="--sw: #8080ff"></button>
+            <button type="button" class="swatch-btn" data-color="#ff0000" aria-checked="false" aria-label="Rojo" title="Rojo (#ff0000)" style="--sw: #ff0000"></button>
+            <button type="button" class="swatch-btn" data-color="#00ff00" aria-checked="false" aria-label="Verde" title="Verde (#00ff00)" style="--sw: #00ff00"></button>
+            <button type="button" class="swatch-btn" data-color="#0000ff" aria-checked="false" aria-label="Azul" title="Azul (#0000ff)" style="--sw: #0000ff"></button>
 
-            <button type="button" class="btn btn-secondary btn-xs" id="bgTransparent" data-transparent="true">Transparente</button>
+            <span class="swatch-divider" aria-hidden="true"></span>
+
+            <button type="button" class="btn btn-secondary btn-xs checker-btn" id="bgTransparent" data-transparent="true" title="Fondo transparente (PNG Alpha)">
+              <span class="checker-icon" aria-hidden="true"></span>
+              Transparente
+            </button>
 
             <div class="color-picker-wrap" title="Elegir color personalizado">
-              <button type="button" class="color-chip-gradient" aria-label="Elegir color"></button>
-              <input type="color" id="bgColorPicker" value="#ffffff" class="color-input-native" />
+              <button type="button" class="color-chip-gradient" aria-label="Elegir color personalizado"></button>
+              <input type="color" id="bgColorPicker" value="#ffffff" class="color-input-native" aria-label="Selector de color personalizado" />
             </div>
           </div>
         </div>
@@ -74,8 +120,21 @@
         <div class="control-group col-actions">
           <label>&nbsp;</label>
           <div class="action-group">
-            <button type="button" class="btn btn-secondary" onclick="app.clearAll()">Limpiar Todo</button>
-            <button type="button" class="btn" onclick="app.downloadAll()">⬇ Descargar Todo</button>
+            <button type="button" class="btn btn-danger-ghost" onclick="app.clearAll()" title="Vaciar todas las celdas de los atlas activos">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              Limpiar Todo
+            </button>
+            <button type="button" class="btn" onclick="app.downloadAll()" title="Descargar todos los atlas activos en PNG">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Descargar Todo
+            </button>
           </div>
         </div>
       </div>
@@ -83,12 +142,21 @@
       <!-- Fila de canales PBR (solo visible en modo multi) -->
       <div class="toolbar-row toolbar-channels" id="channelSelectorGroup" style="display: none;">
         <div class="control-group full-width">
-          <label>Mapas activos <span class="label-sub">(se añade automáticamente el sufijo <code>_canal</code> al archivo)</span></label>
+          <label>
+            Mapas PBR activos
+            <span class="label-sub">(se añade automáticamente el sufijo <code>_canal</code> al exportar)</span>
+          </label>
           <div class="channels-bar">
             <div class="channel-chips" id="channelChips"></div>
             <div class="custom-channel-box">
               <input type="text" id="customChannelInput" class="input input-sm" placeholder="Nuevo canal (ej: mask, height)..." />
-              <button type="button" class="btn btn-secondary btn-sm" id="addCustomChannelBtn">+ Añadir</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="addCustomChannelBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Añadir
+              </button>
             </div>
           </div>
         </div>
@@ -96,17 +164,48 @@
     </section>
 
     <div class="helper-banner card">
-      <span class="helper-badge">Atajos</span>
-      <span>Arrastra imágenes desde tu PC a cualquier celda • <strong>Doble clic</strong> en celda vacía para elegir archivo • <strong>Arrastra</strong> para intercambiar celdas • <strong>Clic derecho</strong> para vaciar celda.</span>
+      <div class="helper-left">
+        <span class="helper-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          Controles rápidos
+        </span>
+        <div class="shortcut-pills">
+          <span class="shortcut-item"><span class="kbd">Arrastrar archivos</span> Cargar en lote desde esa celda</span>
+          <span class="shortcut-item"><span class="kbd">Doble clic</span> Elegir archivo o vaciar</span>
+          <span class="shortcut-item"><span class="kbd">Arrastrar celda</span> Intercambiar posición</span>
+          <span class="shortcut-item"><span class="kbd">Clic derecho</span> Eliminar textura</span>
+        </div>
+      </div>
+
+      <button type="button" class="grid-toggle-btn active" id="toggleGridBtn" title="Mostrar u ocultar las líneas guía de la cuadrícula (las guías nunca salen en el PNG descargado)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="3" y1="15" x2="21" y2="15"/>
+          <line x1="9" y1="3" x2="9" y2="21"/>
+          <line x1="15" y1="3" x2="15" y2="21"/>
+        </svg>
+        <span>Guías visibles</span>
+      </button>
     </div>
 
-    <section class="boards-grid" id="boardsContainer"></section>
+    <section class="boards-grid" id="boardsContainer" aria-live="polite"></section>
   </main>
 
   <input type="file" id="cellFileInput" multiple accept="image/*" style="display:none" />
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <footer class="page-footer">
-    <small>Hecho con ❤️ para tu flujo de trabajo</small>
+    <div class="footer-inner">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+      <span>Procesamiento 100% local en tu navegador • Sin pérdida de calidad</span>
+    </div>
   </footer>
 
   <script>
@@ -132,6 +231,7 @@
         this.slots = new Map();
 
         this.highlightedSlot = null;
+        this.hoveredSlot = null;
         this.isDragging = false;
         this.dragSourceCell = null;
 
@@ -152,37 +252,77 @@
         this.el.innerHTML = `
           <div class="board-header">
             <div class="board-title-group">
-              <h3 class="board-title">${this.label}</h3>
+              <div class="board-title-row">
+                <h3 class="board-title">${this.label}</h3>
+                <span class="slot-counter" id="counter_${this.id}">0 / 4 slots</span>
+              </div>
               <span class="board-filename" id="fname_${this.id}"></span>
             </div>
             <div class="board-header-actions">
-              <button class="btn btn-secondary btn-sm" type="button" title="Vaciar este cuadro" data-action="clear">Limpiar</button>
-              <button class="btn btn-sm" type="button" title="Descargar este atlas" data-action="download">Descargar</button>
+              <button class="btn btn-secondary btn-sm" type="button" title="Vaciar este cuadro" data-action="clear">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                </svg>
+                Limpiar
+              </button>
+              <button class="btn btn-sm" type="button" title="Descargar este atlas en PNG" data-action="download">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Descargar
+              </button>
             </div>
           </div>
           <div class="canvas-wrapper">
             <canvas class="atlas-canvas-el" width="${this.manager.resolution}" height="${this.manager.resolution}"></canvas>
-            <canvas class="grid-overlay" width="${this.manager.resolution}" height="${this.manager.resolution}"></canvas>
+            <canvas class="grid-overlay ${this.manager.showGrid ? '' : 'hidden'}" width="${this.manager.resolution}" height="${this.manager.resolution}"></canvas>
+            <div class="canvas-empty-hint" id="empty_${this.id}">
+              <div class="empty-hint-box">
+                <div class="empty-hint-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                </div>
+                <p class="empty-hint-title">Arrastra tus texturas aquí</p>
+                <p class="empty-hint-sub">O haz doble clic en cualquier celda para explorar archivos</p>
+              </div>
+            </div>
+            <div class="cell-info-badge" id="cellinfo_${this.id}"></div>
           </div>
         `;
 
+        this.wrapperEl = this.el.querySelector('.canvas-wrapper');
         this.canvas = this.el.querySelector('.atlas-canvas-el');
         this.ctx = this.canvas.getContext('2d', { alpha: true });
         this.gridCanvas = this.el.querySelector('.grid-overlay');
         this.gridCtx = this.gridCanvas.getContext('2d', { alpha: true });
         this.filenameEl = this.el.querySelector('.board-filename');
+        this.counterEl = this.el.querySelector('.slot-counter');
+        this.emptyHintEl = this.el.querySelector('.canvas-empty-hint');
+        this.cellInfoEl = this.el.querySelector('.cell-info-badge');
 
         this.el.querySelector('[data-action="clear"]').addEventListener('click', () => this.clear());
         this.el.querySelector('[data-action="download"]').addEventListener('click', () => this.download());
 
         this.canvas.addEventListener('dragover', (e) => this.handleDragOver(e));
         this.canvas.addEventListener('drop', (e) => this.handleDrop(e));
-        this.canvas.addEventListener('dragleave', () => this.clearHighlight());
+        this.canvas.addEventListener('dragleave', () => {
+          this.wrapperEl.classList.remove('drag-active');
+          this.clearHighlight();
+        });
 
         this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
         this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e), { passive: true });
         this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e), { passive: true });
-        this.canvas.addEventListener('mouseleave', () => this.cancelDrag(), { passive: true });
+        this.canvas.addEventListener('mouseleave', () => {
+          this.hoveredSlot = null;
+          this.updateCellInfoBadge();
+          this.cancelDrag();
+        }, { passive: true });
 
         this.canvas.addEventListener('dblclick', (e) => this.handleDoubleClick(e));
 
@@ -192,11 +332,13 @@
           const key = `${gridX},${gridY}`;
           if (this.slots.has(key)) {
             this.slots.delete(key);
+            this.updateCellInfoBadge();
             this.scheduleDrawAtlas();
           }
         });
 
         this.updateFilenamePreview();
+        this.updateBoardStatus();
       }
 
       getOutputFilename() {
@@ -208,9 +350,55 @@
       }
 
       updateFilenamePreview() {
-        if (this.filenameEl) {
-          this.filenameEl.textContent = this.getOutputFilename();
+        if (!this.filenameEl) return;
+        const base = (this.manager.baseName || 'Atlas').trim() || 'Atlas';
+        if (this.manager.mode === 'single') {
+          this.filenameEl.innerHTML = `Archivo: <strong>${base}.png</strong>`;
+        } else {
+          this.filenameEl.innerHTML = `Archivo: ${base}<strong>${this.suffix}</strong>.png`;
         }
+      }
+
+      updateBoardStatus() {
+        const gx = this.manager.gridX;
+        const gy = this.manager.gridY;
+        const total = gx * gy;
+        let used = 0;
+        for (const key of this.slots.keys()) {
+          const [cx, cy] = key.split(',').map(Number);
+          if (cx < gx && cy < gy) used++;
+        }
+
+        if (this.counterEl) {
+          this.counterEl.textContent = `${used} / ${total} slots`;
+          this.counterEl.classList.toggle('has-items', used > 0);
+        }
+
+        if (this.emptyHintEl) {
+          this.emptyHintEl.classList.toggle('hidden', used > 0 || this.highlightedSlot !== null);
+        }
+      }
+
+      updateCellInfoBadge() {
+        if (!this.cellInfoEl) return;
+        if (!this.hoveredSlot) {
+          this.cellInfoEl.classList.remove('visible');
+          this.canvas.classList.remove('has-slot-hover');
+          return;
+        }
+        const { gridX, gridY } = this.hoveredSlot;
+        const key = `${gridX},${gridY}`;
+        const slotIndex = gridY * this.manager.gridX + gridX + 1;
+        const item = this.slots.get(key);
+
+        if (item) {
+          this.cellInfoEl.textContent = `Slot #${slotIndex} (${gridX + 1},${gridY + 1}) • ${item.name}`;
+          this.canvas.classList.add('has-slot-hover');
+        } else {
+          this.cellInfoEl.textContent = `Slot #${slotIndex} (${gridX + 1},${gridY + 1}) • Vacío (Doble clic para cargar)`;
+          this.canvas.classList.remove('has-slot-hover');
+        }
+        this.cellInfoEl.classList.add('visible');
       }
 
       updateCanvasSize() {
@@ -236,9 +424,6 @@
         const gx = this.manager.gridX;
         const gy = this.manager.gridY;
 
-        // Usar el tamaño visual en pantalla (multiplicado por devicePixelRatio) para que
-        // las líneas de la cuadrícula siempre tengan un grosor nítido y constante sin importar
-        // si el cuadro es pequeño (modo PBR) o si la resolución es 4096.
         const rect = this.canvas.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
         const w = Math.max(256, Math.round((rect.width || 400) * dpr));
@@ -250,12 +435,14 @@
         }
 
         g.clearRect(0, 0, w, h);
-        g.strokeStyle = '#ff4d4d';
-        g.lineWidth = Math.max(2, Math.round(2.5 * dpr));
 
         const cw = w / gx;
         const ch = h / gy;
 
+        // Sombra oscura sutil + línea cian/roja de alto contraste para verse sobre cualquier textura
+        g.save();
+        g.strokeStyle = 'rgba(0, 0, 0, 0.55)';
+        g.lineWidth = Math.max(3, Math.round(3.5 * dpr));
         for (let i = 1; i < gx; i++) {
           const x = Math.round(i * cw);
           g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
@@ -264,6 +451,18 @@
           const y = Math.round(i * ch);
           g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
         }
+
+        g.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+        g.lineWidth = Math.max(1.5, Math.round(1.8 * dpr));
+        for (let i = 1; i < gx; i++) {
+          const x = Math.round(i * cw);
+          g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke();
+        }
+        for (let i = 1; i < gy; i++) {
+          const y = Math.round(i * ch);
+          g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke();
+        }
+        g.restore();
       }
 
       drawAtlas() {
@@ -293,9 +492,9 @@
             ctx.globalAlpha = 0.35;
             ctx.drawImage(item.img, x, y, cw, ch);
             ctx.restore();
-            ctx.strokeStyle = '#00a2ff';
-            ctx.setLineDash([8, 6]);
-            ctx.lineWidth = Math.max(2, res / 256);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.setLineDash([10, 6]);
+            ctx.lineWidth = Math.max(3, res / 220);
             ctx.strokeRect(x + 2, y + 2, cw - 4, ch - 4);
             ctx.setLineDash([]);
           } else {
@@ -306,9 +505,14 @@
         if (this.highlightedSlot) {
           const x = this.highlightedSlot.gridX * cw;
           const y = this.highlightedSlot.gridY * ch;
-          ctx.fillStyle = 'rgba(0, 162, 255, 0.25)';
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.24)';
           ctx.fillRect(x, y, cw, ch);
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = Math.max(3, res / 240);
+          ctx.strokeRect(x + 2, y + 2, cw - 4, ch - 4);
         }
+
+        this.updateBoardStatus();
       }
 
       validCell(gx, gy) {
@@ -329,6 +533,7 @@
       handleDragOver(event) {
         event.preventDefault();
         event.dataTransfer.dropEffect = 'copy';
+        this.wrapperEl.classList.add('drag-active');
         const { gridX, gridY } = this.getGridFromEvent(event);
         if (this.validCell(gridX, gridY)) {
           this.highlightedSlot = { gridX, gridY };
@@ -338,6 +543,7 @@
 
       async handleDrop(event) {
         event.preventDefault();
+        this.wrapperEl.classList.remove('drag-active');
         const files = Array.from(event.dataTransfer.files).filter(f => f.type.startsWith('image/'));
         if (files.length > 0) {
           const { gridX, gridY } = this.getGridFromEvent(event);
@@ -353,6 +559,7 @@
         const gy = this.manager.gridY;
         let currentIndex = startY * gx + startX;
         const maxCells = gx * gy;
+        let loadedCount = 0;
 
         for (const file of files) {
           if (currentIndex >= maxCells) break;
@@ -361,10 +568,15 @@
           const imgEl = await this.manager.decodeImage(file);
           if (imgEl) {
             this.slots.set(`${cellX},${cellY}`, { img: imgEl, name: file.name });
+            loadedCount++;
           }
           currentIndex++;
         }
         this.scheduleDrawAtlas();
+        this.updateCellInfoBadge();
+        if (loadedCount > 1) {
+          this.manager.showToast(`${loadedCount} texturas añadidas a ${this.label}`);
+        }
       }
 
       handleMouseDown(event) {
@@ -380,8 +592,16 @@
       }
 
       handleMouseMove(event) {
-        if (!this.isDragging) return;
         const { gridX, gridY } = this.getGridFromEvent(event);
+        if (this.validCell(gridX, gridY)) {
+          this.hoveredSlot = { gridX, gridY };
+          this.updateCellInfoBadge();
+        } else {
+          this.hoveredSlot = null;
+          this.updateCellInfoBadge();
+        }
+
+        if (!this.isDragging) return;
         if (this.validCell(gridX, gridY)) {
           this.highlightedSlot = { gridX, gridY };
         } else {
@@ -404,6 +624,7 @@
               this.slots.set(dstKey, srcItem);
               this.slots.delete(srcKey);
             }
+            this.updateCellInfoBadge();
           }
         }
         this.cancelDrag();
@@ -413,7 +634,7 @@
         if (!this.isDragging && !this.highlightedSlot) return;
         this.isDragging = false;
         this.dragSourceCell = null;
-        this.canvas.style.cursor = 'grab';
+        this.canvas.style.cursor = '';
         this.clearHighlight();
       }
 
@@ -423,6 +644,7 @@
         const key = `${gridX},${gridY}`;
         if (this.slots.has(key)) {
           this.slots.delete(key);
+          this.updateCellInfoBadge();
           this.scheduleDrawAtlas();
         } else {
           this.manager.openFilePickerForCell(this, gridX, gridY);
@@ -436,6 +658,7 @@
 
       clear() {
         this.slots.clear();
+        this.updateCellInfoBadge();
         this.scheduleDrawAtlas();
       }
 
@@ -446,14 +669,16 @@
         this.isDragging = false;
         this.drawAtlas();
 
+        const filename = this.getOutputFilename();
         const link = document.createElement('a');
-        link.download = this.getOutputFilename();
+        link.download = filename;
         link.href = this.canvas.toDataURL('image/png');
         link.click();
 
         this.highlightedSlot = prevHighlight;
         this.isDragging = prevDragging;
         this.scheduleDrawAtlas();
+        this.manager.showToast(`Descargado: ${filename}`);
       }
     }
 
@@ -466,6 +691,7 @@
         this.gridY = 2;
         this.backgroundTransparent = false;
         this.backgroundColor = '#ffffff';
+        this.showGrid = true;
 
         this.channels = DEFAULT_CHANNELS.map(c => ({ ...c }));
         this.boards = new Map();
@@ -476,6 +702,7 @@
         this.setupEventListeners();
         this.renderChannelChips();
         this.rebuildBoardsView();
+        this.updateHeaderSummary();
       }
 
       setupEventListeners() {
@@ -490,14 +717,11 @@
           if (!btn) return;
           this.mode = btn.dataset.mode;
           document.querySelectorAll('#modeToggle button[data-mode]').forEach(b => {
-            if (b === btn) {
-              b.classList.remove('btn-secondary');
-            } else {
-              b.classList.add('btn-secondary');
-            }
+            b.classList.toggle('active', b === btn);
           });
           document.getElementById('channelSelectorGroup').style.display = this.mode === 'multi' ? '' : 'none';
           this.rebuildBoardsView();
+          this.updateHeaderSummary();
         });
 
         const addChannel = () => {
@@ -516,6 +740,7 @@
           input.value = '';
           this.renderChannelChips();
           this.rebuildBoardsView();
+          this.updateHeaderSummary();
         };
         document.getElementById('addCustomChannelBtn').addEventListener('click', addChannel);
         document.getElementById('customChannelInput').addEventListener('keydown', (e) => {
@@ -529,6 +754,7 @@
             b.scheduleDrawGrid();
             b.scheduleDrawAtlas();
           });
+          this.updateHeaderSummary();
         });
 
         document.getElementById('gridPreset').addEventListener('change', (e) => {
@@ -539,6 +765,7 @@
             b.scheduleDrawGrid();
             b.scheduleDrawAtlas();
           });
+          this.updateHeaderSummary();
         });
 
         const swatchContainer = document.getElementById('bgSwatches');
@@ -565,6 +792,16 @@
           this.forEachBoard(b => b.scheduleDrawAtlas());
         });
 
+        const toggleGridBtn = document.getElementById('toggleGridBtn');
+        toggleGridBtn.addEventListener('click', () => {
+          this.showGrid = !this.showGrid;
+          toggleGridBtn.classList.toggle('active', this.showGrid);
+          toggleGridBtn.querySelector('span').textContent = this.showGrid ? 'Guías visibles' : 'Guías ocultas';
+          this.forEachBoard(b => {
+            b.gridCanvas.classList.toggle('hidden', !this.showGrid);
+          });
+        });
+
         const cellFileInput = document.getElementById('cellFileInput');
         cellFileInput.addEventListener('change', async (e) => {
           const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
@@ -579,6 +816,38 @@
         window.addEventListener('resize', () => {
           this.forEachBoard(b => b.scheduleDrawGrid());
         });
+      }
+
+      updateHeaderSummary() {
+        const el = document.getElementById('headerSummaryText');
+        if (!el) return;
+        const slots = this.gridX * this.gridY;
+        if (this.mode === 'single') {
+          el.textContent = `${this.resolution}×${this.resolution}px • ${this.gridX}×${this.gridY} (${slots} slots)`;
+        } else {
+          const activeCount = this.channels.filter(c => c.active).length;
+          el.textContent = `${this.resolution}×${this.resolution}px • ${this.gridX}×${this.gridY} (${slots} slots) • ${activeCount} canales PBR`;
+        }
+      }
+
+      showToast(message) {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>${message}</span>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(8px)';
+          toast.style.transition = 'all 0.2s ease';
+          setTimeout(() => toast.remove(), 220);
+        }, 2400);
       }
 
       openFilePickerForCell(board, gridX, gridY) {
@@ -617,14 +886,16 @@
         this.channels.forEach(ch => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = `btn btn-xs ${ch.active ? '' : 'btn-secondary'}`;
-          btn.innerHTML = `${ch.label} <small>${ch.suffix}</small>`;
+          btn.className = `channel-chip ${ch.active ? 'active' : ''}`;
+          btn.setAttribute('aria-pressed', ch.active ? 'true' : 'false');
+          btn.innerHTML = `<span class="chip-indicator"></span>${ch.label} <small>${ch.suffix}</small>`;
           btn.addEventListener('click', () => {
             const activeCount = this.channels.filter(c => c.active).length;
             if (ch.active && activeCount <= 1) return;
             ch.active = !ch.active;
             this.renderChannelChips();
             this.rebuildBoardsView();
+            this.updateHeaderSummary();
           });
           container.appendChild(btn);
         });
@@ -683,6 +954,7 @@
 
       clearAll() {
         this.getActiveBoards().forEach(b => b.clear());
+        this.showToast('Todos los cuadros activos han sido vaciados');
       }
 
       downloadAll() {
